@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    --color-primary: #111640;
+}
+
 body {
     font-family: 'Montserrat', sans-serif;
 }
@@ -22,4 +26,68 @@ body {
 
 .bg-modal {
     background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Form Authentication*/
+.form-group {
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group-radio {
+    display: flex;
+    align-items: center;
+}
+
+.form-group-radio label {
+    margin-top: 6px;
+    margin-left: 10px;
+}
+
+.input-form {
+    margin-top: 8px;
+    padding: 10px 5px;
+    font-size: 15px;
+    border-radius: 7px;
+    border: 2px solid #e6e6e6;
+}
+
+.input-form:focus {
+    border-color: var(--color-primary);
+    outline: 0 none;
+}
+
+.form-group_btn {
+    margin-top: 20px;
+}
+
+/* End Form Authentication */
+
+/* Button */
+.btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+    border: 1px solid var(--color-primary);
+    padding: 8px 13px;
+    font-size: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-cancel {
+    border: none;
+    background-color: rgb(246, 246, 246);
+    width: 100%;
+    padding: 13px;
+    font-size: 1em;
+    color: black;
+    border-radius: 5px;
+    margin-top: 20px;
+    box-shadow: -2px -1px 14px -7px rgba(0, 0, 0, 0.75);
+    cursor: pointer;
+}
+
+.btn-full {
+    width: 100%;
 }
