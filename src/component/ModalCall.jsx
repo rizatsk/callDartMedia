@@ -1,13 +1,6 @@
 import { conversation, phoneHangUp, upCall } from "../img";
 
-function ModalCall({
-  modalCall,
-  answerBtn,
-  answerCall,
-  rejectCall,
-  hangUpCall,
-  notifcation,
-}) {
+function ModalCall({ modalCall, answerBtn, notifcation }) {
   return (
     <div
       className={`${
@@ -33,7 +26,6 @@ function ModalCall({
           <div className="flex flex-col items-center">
             <button
               className="text-xl 2xl:text-2xl font-bold bg-green-500 p-4 rounded-full text-white"
-              onClick={answerCall}
               id="answerBtn"
             >
               <img
@@ -47,7 +39,6 @@ function ModalCall({
           <div className="flex flex-col items-center">
             <button
               className="text-xl 2xl:text-2xl font-bold bg-red-500 p-4 rounded-full text-white"
-              onClick={rejectCall}
               id="rejectBtn"
             >
               <img
@@ -63,7 +54,6 @@ function ModalCall({
           <div className="flex flex-col items-center">
             <button
               className="text-xl 2xl:text-2xl font-bold bg-red-500 p-4 rounded-full text-white"
-              onClick={hangUpCall}
               id="hangUpBtn"
             >
               <img

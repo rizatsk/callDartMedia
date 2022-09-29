@@ -1,5 +1,4 @@
 import { call, history, mic } from "../img";
-import CallDetail from "./CallDetail";
 
 function Recent({ dataActive }) {
   return (
@@ -15,7 +14,7 @@ function Recent({ dataActive }) {
           <button className="bg-transparent hover:cursor-pointer">
             <img className="w-[20px]" src={history} alt="history" />
           </button>
-          <button className="bg-transparent hover:cursor-pointer">
+          <button className="bg-transparent hover:cursor-pointer" id="callApp">
             <img className="w-[70px]" src={call} alt="call" />
           </button>
         </div>

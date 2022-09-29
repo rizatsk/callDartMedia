@@ -9,15 +9,13 @@ import {
   showNotification,
 } from "../utils/notifcation";
 import ModalCall from "../component/ModalCall";
+import ModalCallOut from "../component/ModalCallOut";
 import NexmoClient from "nexmo-client";
-import WebStore from "../data/WebStore";
 
 function Call({ jwt }) {
   const [modalCall, setModalCall] = useState(false);
   const [active, setActive] = useState(null);
   const [answerBtn, setAnswerBtn] = useState(false);
-  const [rejectBtn, setRejectBtn] = useState(false);
-  const [hangUpBtn, setHangUpBtn] = useState(false);
   const [notifcation, setNotification] = useState(null);
   const [dataActive, setDataActive] = useState({
     number: null,
@@ -25,6 +23,8 @@ function Call({ jwt }) {
     exp: null,
     time: null,
   });
+  const [modalCallOut, setModalCallOut] = useState(false);
+  const [callStatusOut, setCallStatusOut] = useState("Waiting...");
 
   useEffect(() => {
     if (Notification.permission === "default") {
@@ -41,64 +41,96 @@ function Call({ jwt }) {
     setDataActive({ number, status, exp, time });
   }
 
-  function answerCall() {
-    setAnswerBtn(true);
-    setRejectBtn(false);
-    setHangUpBtn(false);
-  }
-
-  function rejectCall() {
-    setAnswerBtn(false);
-    setRejectBtn(true);
-    setHangUpBtn(false);
-  }
-
-  function hangUpCall() {
-    setAnswerBtn(false);
-    setRejectBtn(false);
-    setHangUpBtn(true);
-  }
-
   const nexmoClient = new NexmoClient({ debug: true }).createSession(jwt);
+  // const nexmoClient = new NexmoClient({ debug: true }).createSession();
+
+  // Button Call Out
+  const btnCall = document.getElementById("callApp");
+  const btnHangUpCallOut = document.getElementById("hangUpBtnCallOut");
+  // End Button Call Out
 
   useEffect(() => {
     nexmoClient
       .then((app) => {
+        // Call out
+        btnCall.addEventListener("click", () => {
+          setModalCallOut(true);
+          setCallStatusOut("Waiting...");
+          app
+            .inAppCall(["user1"])
+            .then(() => {
+              setCallStatusOut("Calling...");
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+          // app.callServer("user1", "app");
+          // app.callServer("6281282085511");
+          // setCallStatusOut("Calling...");
+        });
+
+        // Recived Call
+        const answer = document.getElementById("answerBtn");
+        const reject = document.getElementById("rejectBtn");
+        const hangUp = document.getElementById("hangUpBtn");
+
         app.on("member:call", (member, call) => {
-          showNotification();
-          setModalCall(true);
-
-          const answer = document.getElementById("answerBtn");
-          const reject = document.getElementById("rejectBtn");
-          const hangUp = document.getElementById("hangUpBtn");
-
-          setNotification("You are receiving a call");
-          // Answer the call.
-          answer.addEventListener("click", () => {
-            call.answer();
-            stopNotification();
-            setNotification("You are in a call");
+          btnHangUpCallOut.addEventListener("click", async () => {
+            await call.hangUp();
+            // window.location.reload();
+            setCallStatusOut("Waiting...");
+            setModalCallOut(false);
+            console.log("ok");
           });
-          // Reject the call
-          reject.addEventListener("click", () => {
-            call.reject();
-            stopNotification();
-            setNotification(`You rejected the call`);
+
+          if (member.user.name === "cs1") {
+            showNotification();
+            setModalCall(true);
+
+            setNotification("You are receiving a call");
+            // Answer the call.
+            answer.addEventListener("click", () => {
+              call.answer();
+              setAnswerBtn(true);
+              stopNotification();
+              setNotification("You are in a call");
+            });
+            // Reject the call
+            reject.addEventListener("click", () => {
+              call.reject();
+              stopNotification();
+              setNotification(`You rejected the call`);
+              setModalCall(false);
+              setAnswerBtn(false);
+            });
+            // Hang-up the call
+            hangUp.addEventListener("click", () => {
+              call.hangUp();
+              stopNotification();
+              setNotification(`You ended the call`);
+              setModalCall(false);
+              setAnswerBtn(false);
+            });
+          }
+        });
+
+        app.on("call:status:changed", async (call) => {
+          setNotification("Call Status: " + call.status);
+          setCallStatusOut(call.status);
+          if (call.status === "rejected") {
             setModalCall(false);
-            setAnswerBtn(false);
-          });
-          // Hang-up the call
-          hangUp.addEventListener("click", () => {
-            call.hangUp();
             stopNotification();
-            setNotification(`You ended the call`);
-            setModalCall(false);
-            setAnswerBtn(false);
-          });
 
-          // app.on("call:status:changed", (call) => {
-          //   setNotification("Call Status: " + call.status);
-          // });
+            setCallStatusOut("Waiting...");
+            setModalCallOut(false);
+          }
+          if (call.status === "unanswered") {
+            setModalCall(false);
+            stopNotification();
+
+            setCallStatusOut("Waiting...");
+            setModalCallOut(false);
+          }
         });
       })
       .catch((error) => {
@@ -139,11 +171,10 @@ function Call({ jwt }) {
       <ModalCall
         modalCall={modalCall}
         answerBtn={answerBtn}
-        answerCall={answerCall}
-        rejectCall={rejectCall}
-        hangUpCall={hangUpCall}
         notifcation={notifcation}
       />
+
+      <ModalCallOut modalCallOut={modalCallOut} statusCallOut={callStatusOut} />
     </div>
   );
 }
